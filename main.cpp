@@ -50,5 +50,13 @@ int main() {
         list->insertByPos(val, pos);
         list->print();
     }
+    cout << endl << "let's try delete element by it's value, enter value: " << endl;
+    cin >> val;
+    while (!list->eraseByVal(val)) {
+        cout << "try again: ";
+        cin >> val;
+    }
+    list->print();
+
     return 0;
 }

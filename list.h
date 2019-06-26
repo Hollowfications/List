@@ -31,14 +31,9 @@ public:
         Node() {}
         Node(T val, Node* prior) : value(val) {
             this->prev = prior;
-            //prior->next = this;
             this->prev = prior;
-            //next = this;
         }
-        ~Node() {
-            prev->next = this->next;
-            //next->prev = this->prev;
-        }
+        ~Node() {}
     };
 
     class Iterator : public std::iterator<std::bidirectional_iterator_tag, T>{
@@ -119,7 +114,7 @@ public:
             new_node->prev = head->prev;
             new_node->next = head;
             head = new_node;
-            head->prev = nullptr;
+            head->prev = new_node->prev;
             count++;
         }
     }
@@ -178,7 +173,6 @@ public:
         }
         else if ((It.getCurrent() == head) && (It.getCurrent() == tail)) {
             clear();
-            count--;
         }
         else if (It.getCurrent() == tail) {
             Node* ptr = tail;
@@ -227,6 +221,47 @@ public:
             PrevIt.getCurrent()->next = new_node;
             count++;
         }
+    }
+
+    bool eraseByVal(T val) {
+        Iterator It, PrevIt;
+        It = begin();
+        bool isIn = false;
+        while (It != end() && *It != val) {
+            PrevIt = It;
+            ++It;
+        }
+        if (*It == val) {
+            isIn = true;
+            if (It.getCurrent() == head && It.getCurrent() != tail) {
+                Node* ptr = head;
+                head = head->next;
+                //head->prev = nullptr;
+                delete ptr;
+                count--;
+            }
+            else if ((It.getCurrent() == head) && (It.getCurrent() == tail)) {
+                clear();
+            }
+            else if (It.getCurrent() == tail && It.getCurrent() != head) {
+                Node* ptr = tail;
+                tail = tail->prev;
+                tail->next = ptr->next;
+                delete ptr;
+                count--;
+            }
+            else {
+                Node* ptr = It.getCurrent();
+                PrevIt.getCurrent()->next = ptr->next;
+                delete ptr;
+                count--;
+            }
+        }
+
+        if (isIn == false) {
+            std::cout << "no such value in list\n";
+        }
+        return isIn;
     }
 
   Node *head;
